@@ -2,8 +2,9 @@ const search = document.getElementById('search'),
     submit = document.getElementById('submit'),
     random = document.getElementById('random'),
     mealsEl = document.getElementById('meals'),
-    resultHeading = document.getElementById('result-heading'),
+    resultHeading = document.getElementById('result-heading');
     single_mealEl = document.getElementById('single-meal');
+    sample = document.getElementById('sample');
 
 // Search meal and fetch from API
 function searchMeal(e) {
@@ -26,14 +27,18 @@ function searchMeal(e) {
                 if (data.meals === null) {
                     resultHeading.innerHTML = `<p>There are no search results. Try again.</p>`;
                 } else {
-                    mealsEl.innerHTML = data.meals.map(function (meal) {
-                        return `<div class="meal">
-                                    <img src="${meal.strMealThumb}" alt="${meal.strMeal}"/>
-                                    <div class="meal-info" data-mealId="${meal.idMeal}">
-                                        <h3>${meal.strMeal}</h3>
-                                    </div>
-                                </div>`
-                    }).join('');
+                    console.log('success');
+                    sample.innerHTML = data.meals
+                    .map(
+                    meal => `
+                    <div class="meal">
+                        <img src="${meal.strMealThumb}" alt="${meal.strMeal}" />
+                        <div class="meal-info" data-mealId="${meal.idMeal}">
+                            <h3>${meal.strMeal}</h3>
+                        </div>
+                    </div>
+                    `
+                    ).join('');
                 }
             });
         // Clear search text
