@@ -113,7 +113,7 @@ body {
 
 .music-container.play .music-info {
     opacity: 1;
-    transform: translateY(-100);
+    transform: translateY(-100%);
 }
 
 .music-info h4 {
