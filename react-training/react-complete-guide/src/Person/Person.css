@@ -1,0 +1,12 @@
+/* is not scoped to Person.js component
+but can see as global css class in a browser.
+You can also see that automatic prefixes to work in as many browsers as possible.
+*/
+.Person {
+    width: 60%;
+    margin: 16px auto;
+    border: 1px solid #eee;
+    box-shadow:  0 2px 3px #ccc;
+    padding: 16px;
+    text-align: center;
+}

@@ -1,10 +1,21 @@
 import React from 'react';
+import './Person.css';
+
+/* props is simply an object giving us access to all the attributes we pass to our own components.
+But sometimes you don't want to get some information from outside but you want to have it inside a component and change it from inside there, too.
+state property here is only available like this in components that extend components
+
+two-way binding : propagate the change so that we can update the state
+listen to the nameChangeHandler which updates the state --> pass down tghe value to the Person and age 
+--> output the value to the input
+*/
 
 const person = (props) => {
     return (
-    <div>
-    <p>I'm {props.name} and I am {props.age} years old!</p>
-    <p>{props.children}</p>
+    <div className="Person">
+        <p onClick={props.click}>I'm {props.name} and I am {props.age} years old!</p>
+        <p>{props.children}</p>
+        <input type="text" onChange={props.changed} value={props.name}/>
     </div>
     )
 };
