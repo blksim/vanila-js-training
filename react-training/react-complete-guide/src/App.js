@@ -70,35 +70,97 @@ class App extends Component {
   the difference to props is, that this happens within one and the same component */
   state = {
     persons: [
-      { name: 'Max', age: 28 },
-      { name: 'Manu', age: 29 },
-      { name: 'Stephanie', age: 26}
+      { id: 123, name: 'Max', age: 28 },
+      { id: 456, name: 'Manu', age: 29 },
+      { id: 789, name: 'Stephanie', age: 26}
     ],
-    otherState: 'some other value' // React will not discard other state but it will simply merge the old state with the new one.
+    otherState: 'some other value', // React will not discard other state but it will simply merge the old state with the new one.
+    showPersons: false
   }
 
-  switchNameHandler = (newName) => {
-  // DONT DO THIS: this.state.persons[0].name = 'Maximilian'; // we shouldn't mutate which means change the state directly like this.
-  // this.setState() only availabe in class-based components.
-  // and it was the only way of managing state in React app in class-based components. 
-  // since React 16.8, there is also a way for us to manage state in functional components with a featrue called React hooks.
-  this.setState({persons: [
-      { name: newName, age: 28 },
-      { name: 'Manu', age: 29 },
-      { name: 'Stephanie', age: 27}
-    ]})
-/*     DOM will be updated because React recognized that the state of the application changes and this is really a special thing.
-    but keep in mind what we actually output for each person is defined in this person component
-    If state or props changes, it basically analyze the code it already rendered to the DOM
-    and the code it would now render if it were to re-render everything and then it updates to existing DOM in all the places where it needs to update it to reflect your new state and props. */
+//   switchNameHandler = (newName) => {
+//   // DONT DO THIS: this.state.persons[0].name = 'Maximilian'; // we shouldn't mutate which means change the state directly like this.
+//   // this.setState() only availabe in class-based components.
+//   // and it was the only way of managing state in React app in class-based components. 
+//   // since React 16.8, there is also a way for us to manage state in functional components with a featrue called React hooks.
+//   this.setState({persons: [
+//       { name: newName, age: 28 },
+//       { name: 'Manu', age: 29 },
+//       { name: 'Stephanie', age: 27}
+//     ]})
+// /*     DOM will be updated because React recognized that the state of the application changes and this is really a special thing.
+//     but keep in mind what we actually output for each person is defined in this person component
+//     If state or props changes, it basically analyze the code it already rendered to the DOM
+//     and the code it would now render if it were to re-render everything and then it updates to existing DOM in all the places where it needs to update it to reflect your new state and props. */
+//   }
+
+  nameChangedHandler = (event, id) => {
+    const personIndex = this.state.persons.findIndex(p => {
+      return p.id === id;
+    });
+
+    // spread operator also available for objects. 
+    // it will distribute all the properties of the object we fetch here 
+    // into this new object we're creating here.
+    const person =  {
+      ...this.state.persons[personIndex]
+    };
+
+    // Alternative approach : object assigned with an empty object and then the object of which we want to get the properties
+    // const person = Object.assign({}, this.state.persons[personIndex]);
+
+    person.name = event.target.value;
+  
+    const persons = [...this.state.persons];
+    persons[personIndex] = person;
+
+  //   this.setState({persons: [
+  //     { id: 'sjdje1', name: 'Max', age: 28 },
+  //     { id: 'sjdje2', name: event.target.value, age: 29 },
+  //     { id: 'sjdje3', name: 'Stephanie', age: 26}
+  //   ]
+  // })
+    this.setState( {persons: persons } );
   }
 
-  nameChangedHandler = (event) => {
-    this.setState({persons: [
-      { name: 'Max', age: 28 },
-      { name: event.target.value, age: 29 },
-      { name: 'Stephanie', age: 26}
-    ]})
+  /**
+   * - we did this by getting access to all the persons in the state, removing the one element we wanted to remove 
+   *   by using the index of the person and updating the state.
+   * - The flaw of this approach is that in javascript, objects and arrays are reference types.
+   * 
+   * => A good practice is to "create a copy" of your persons array before manipulating it.
+   */
+  deletePersonHandler = (personsIndex) => {
+ /* const persons = this.state.persons; // actually get a pointer to the original person's object managed by react, to the original state
+    persons.splice(personsIndex, 1); // if then splice it here, I already mutate this original data and whilst it does work, **this is not really how you should do it**.
+    this.setState({persons: persons}); // this can lead to unpredictable apps and is definately a bad practice.
+
+    - Slice without arguments simply copies the full array and returns a new one which is then stored here.
+      and you can now safely edit this new one and then update to react state with your new array.
+    const persons = this.state.persons.slice(); 
+    
+    - An alternative is to use spread operator.
+      you can simply set persons equal to a new array and this new array can now use the spread operator
+      which are three dots where are you now reach out to state persons.
+
+      it spreads out the elements in this array into a list of elements simply then
+      gets added to this array, so that now we have an array, a new array, with the objects from the old array but not the old array itself.
+    
+    IMPORTANT :  You should always update state in an immutable fashion, os without mutating the original state first.
+  */
+    const persons = [...this.state.persons];
+    persons.splice(personsIndex, 1); 
+    this.setState({persons: persons}); 
+ 
+  }
+
+  togglePersonsHandler = () => {
+    const doesShow = this.state.showPersons;
+    console.log(doesShow); 
+    this.setState({showPersons: !doesShow}); 
+    /* this gets merged with the other state.
+    it does not mean that the entire state gets replaced with showPersons only.
+    the old state persons, another state simply is not touched, react merges the update showPersons value for us into the state. */
   }
 
 /*
@@ -123,19 +185,72 @@ class App extends Component {
       padding: '8px',
       cursor: 'pointer'
     }; 
+
+    let persons = null;
+
+    if (this.state.showPersons) {
+     /*  
+     
+      - Hardcoded three data => inflexible.
+      
+      - map() simply maps every element is a given array such as our persons array here into something else.
+        It does this by executing a method on every element in a given array.
+        since I just print this new array like this inside jsx, react will basically just try to take the individual elements 
+        of this new array and render them to the dom if they are valid jsx. 
+      
+      - The good thing is the map method also exposes a second argument. the index
+      - execute as a arrow function or use bind
+
+      - By passing unique id using 'key' prop, react can use to compare the elements of the future with the elements of the past
+        and only update the dom in places where it needs to update it.
+      */
+      persons = (
+        <div>
+          {this.state.persons.map((person, index) => {
+            return <Person 
+              click={() => this.deletePersonHandler(index)}
+              name={person.name} 
+              age={person.age}
+              key={person.id}
+              changed={(event) => this.nameChangedHandler(event, person.id)}/>
+          })}
+          {/* <Person name={this.state.persons[0].name} age={this.state.persons[0].age}/> 
+          <Person name={this.state.persons[1].name} age={this.state.persons[1].age} 
+          click={this.switchNameHandler.bind(this, 'Max!')}
+          changed={this.nameChangedHandler}>My Hobbies: Racing</Person> 
+          <Person name={this.state.persons[2].name} age={this.state.persons[2].age}/>   */}
+      </div>
+      );
+    }
     
+    /*
+
+    - You can render content conditionally by adding a ternary expression.
+      but as our app grows as we possibly nest conditions, it can be hard to keep track of which expression is responsible for what
+      and to spot them in our jsx code.
+      
+    - So there is a cleaner & prferred solution for that is kind of outsourcing this check from JSX we return to
+      a variable we conditionally assign before returning.
+    
+    */    
     return (
       <div className="App">
         <h1>Hi. I'm a React App!</h1>
         <p>This is really working!</p>
         <button 
         style={style}
-        onClick={() => this.switchNameHandler('Maximilian!!')}>Swtich Name</button>
-        <Person name={this.state.persons[0].name} age={this.state.persons[0].age}/> 
-        <Person name={this.state.persons[1].name} age={this.state.persons[1].age} 
-        click={this.switchNameHandler.bind(this, 'Max!')}
-        changed={this.nameChangedHandler}>My Hobbies: Racing</Person> 
-        <Person name={this.state.persons[2].name} age={this.state.persons[2].age}/>  
+        onClick={this.togglePersonsHandler.bind(this)}>Swtich Name</button>
+        {persons} 
+         {/* { this.state.showPersons ? 
+        <div>
+          <Person name={this.state.persons[0].name} age={this.state.persons[0].age}/> 
+          <Person name={this.state.persons[1].name} age={this.state.persons[1].age} 
+          click={this.switchNameHandler.bind(this, 'Max!')}
+          changed={this.nameChangedHandler}>My Hobbies: Racing</Person> 
+          <Person name={this.state.persons[2].name} age={this.state.persons[2].age}/>  
+        </div>
+         </div> : null
+        }  */}
       </div> 
       )
      
