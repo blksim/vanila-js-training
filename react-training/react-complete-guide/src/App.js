@@ -1,9 +1,27 @@
 import React, { Component } from 'react';
 //import React, { useState } from 'react'; // useState is the hook that allows us to manage state in a functional component.
+import styled from 'styled-components';
 import './App.css';
-import './Person/Person.css'; // thanks to webpack, we can actually import css into js though it will not really merge the two files.
+//import Radium, { StyleRoot } from 'radium';
+//import './Person/Person.css'; // thanks to webpack, we can actually import css into js though it will not really merge the two files.
 import Person from './Person/Person';
 
+// dynamic expression is also syntax of template literal, not react
+// styled component will have a look at that function and pass the props as argument
+// then we can use the props here and returned text 
+const StyledButton = styled.button`
+  background-color: ${props => props.alt ? 'red' : 'green'};
+  color: white;
+  font: inherit;
+  border: 1px solid blue;
+  padding: 8px;
+  cursor: pointer;
+  
+  &:hover {
+    background-color: ${props => props.alt ? 'salmon' : 'lightgreen'};
+    color: black;
+  }
+`;
 // const App = props => {
 // /* we can pass initial state into the function.
 //   IMPORTANT : useState returns an array with exactly two elements always.
@@ -178,13 +196,18 @@ class App extends Component {
   2. NOT RECOMMENDED : use arrow function with inside of curly brace. it is convenient but can be inefficient because react can re-render certain things too often 
   */  
   render() {
-    const style = {// using inline styles are only applied to single element and no other element or even in the same component.
-      backgroundColor: 'white',
-      font: 'inherit',
-      border: '1px solid blue',
-      padding: '8px',
-      cursor: 'pointer'
-    }; 
+    // const style = {// using inline styles are only applied to single element and no other element or even in the same component.
+    //   backgroundColor: 'green',
+    //   color: 'white',
+    //   font: 'inherit',
+    //   border: '1px solid blue',
+    //   padding: '8px',
+    //   cursor: 'pointer',
+    //   ':hover': {
+    //     backgroundColor: 'lightgreen',
+    //     color: 'black'
+    //   }
+    // }; 
 
     let persons = null;
 
@@ -222,8 +245,21 @@ class App extends Component {
       </div>
       );
     }
+      // assign a value to one of its properties
+      //style.backgroundColor = 'red';
+/*    
+      So this is pretty cool because now you have the best of both worlds,
+      you have the normal css pseudo selectors you can add and you still have scoped styles
+      which you can easily edit from within your javascript code, as you can see below.
+    
+        style[':hover'] = {
+        backgroundColor: 'salmon',
+        color: 'black'
+      }
+    }
     
     /*
+    
 
     - You can render content conditionally by adding a ternary expression.
       but as our app grows as we possibly nest conditions, it can be hard to keep track of which expression is responsible for what
@@ -232,14 +268,22 @@ class App extends Component {
     - So there is a cleaner & prferred solution for that is kind of outsourcing this check from JSX we return to
       a variable we conditionally assign before returning.
     
-    */    
+    */ 
+   const classes = []; 
+   if (this.state.persons.length <= 2) { // classes = ['red']
+     classes.push('red');
+   } 
+   if (this.state.persons.length <= 1) {
+     classes.push('bold'); // classes = ['red' 'bold']
+   }
+   // to use inline media queries with Radium, you should wrap JSX with StyleRoot component
     return (
+//      <StyleRoot>
       <div className="App">
         <h1>Hi. I'm a React App!</h1>
-        <p>This is really working!</p>
-        <button 
-        style={style}
-        onClick={this.togglePersonsHandler.bind(this)}>Swtich Name</button>
+        <p className={classes.join(' ')}>This is really working!</p>
+        <StyledButton alt={this.state.showPerson} 
+        onClick={this.togglePersonsHandler}>Toggle Persons</StyledButton>
         {persons} 
          {/* { this.state.showPersons ? 
         <div>
@@ -252,7 +296,8 @@ class App extends Component {
          </div> : null
         }  */}
       </div> 
-      )
+//      </StyleRoot>
+      );
      
       /* looks like html but it's not. just some syntactical sugar.
       it was basically invented by the react team
@@ -277,10 +322,11 @@ class App extends Component {
       - jsx expression must have one root element.
       - It is a typical thing to wrap everything into one root element per component 
     */  
-   }
+   
+  }
 }
-
-export default App;
-
+// you can use this on both components created with class and extends component as well as functional components
+//export default Radium(App); 
+ export default App;
 
 
