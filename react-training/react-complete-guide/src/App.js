@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 //import React, { useState } from 'react'; // useState is the hook that allows us to manage state in a functional component.
-import styled from 'styled-components';
+//import styled from 'styled-components';
 import './App.css';
 //import Radium, { StyleRoot } from 'radium';
 //import './Person/Person.css'; // thanks to webpack, we can actually import css into js though it will not really merge the two files.
