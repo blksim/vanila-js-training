@@ -11,7 +11,7 @@
 }
 
 /* 이 경우 모든 컴포넌트의 버튼에 스타일이 적용됨. */
-/* .button {
+.Button {
   background-color: green;
   color: white;
   font: inherit;
@@ -20,7 +20,7 @@
   cursor: pointer;
 }
 
-.button:hover {
+.Button:hover {
   background-color: salmon;
   color: black;
-} */
+}

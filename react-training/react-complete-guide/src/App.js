@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 //import React, { useState } from 'react'; // useState is the hook that allows us to manage state in a functional component.
 //import styled from 'styled-components';
-import './App.css';
+import CssModule from './App.module.css';
 //import Radium, { StyleRoot } from 'radium';
 //import './Person/Person.css'; // thanks to webpack, we can actually import css into js though it will not really merge the two files.
 import Person from './Person/Person';
@@ -9,19 +9,19 @@ import Person from './Person/Person';
 // dynamic expression is also syntax of template literal, not react
 // styled component will have a look at that function and pass the props as argument
 // then we can use the props here and returned text 
-const StyledButton = styled.button`
-  background-color: ${props => props.alt ? 'red' : 'green'};
-  color: white;
-  font: inherit;
-  border: 1px solid blue;
-  padding: 8px;
-  cursor: pointer;
+// const StyledButton = styled.button`
+//   background-color: ${props => props.alt ? 'red' : 'green'};
+//   color: white;
+//   font: inherit;
+//   border: 1px solid blue;
+//   padding: 8px;
+//   cursor: pointer;
   
-  &:hover {
-    background-color: ${props => props.alt ? 'salmon' : 'lightgreen'};
-    color: black;
-  }
-`;
+//   &:hover {
+//     background-color: ${props => props.alt ? 'salmon' : 'lightgreen'};
+//     color: black;
+//   }
+// `;
 // const App = props => {
 // /* we can pass initial state into the function.
 //   IMPORTANT : useState returns an array with exactly two elements always.
@@ -282,8 +282,8 @@ class App extends Component {
       <div className="App">
         <h1>Hi. I'm a React App!</h1>
         <p className={classes.join(' ')}>This is really working!</p>
-        <StyledButton alt={this.state.showPerson} 
-        onClick={this.togglePersonsHandler}>Toggle Persons</StyledButton>
+        <button className={CssModule.Button} alt={this.state.showPerson} 
+        onClick={this.togglePersonsHandler}>Toggle Persons</button>
         {persons} 
          {/* { this.state.showPersons ? 
         <div>

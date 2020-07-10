@@ -2,7 +2,7 @@
 but can see as global css class in a browser.
 You can also see that automatic prefixes to work in as many browsers as possible.
 */
-/* .Person {
+.Person {
     width: 60%;
     margin: 16px auto;
     border: 1px solid #eee;
@@ -15,7 +15,7 @@ You can also see that automatic prefixes to work in as many browsers as possible
     .Person {
         width: 450px;
     }
-}  */
+} 
 
 /* 
 If you want to scope it to a component 

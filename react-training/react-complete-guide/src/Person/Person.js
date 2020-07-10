@@ -1,9 +1,7 @@
 import React from 'react';
 //import Radium from 'radium';
-import styled from 'styled-components';
-
-import './Person.css';
-
+//import styled from 'styled-components';
+import CssModules from './Person.module.css';
 
 /* props is simply an object giving us access to all the attributes we pass to our own components.
 But sometimes you don't want to get some information from outside but you want to have it inside a component and change it from inside there, too.
@@ -18,7 +16,7 @@ listen to the nameChangeHandler which updates the state --> pass down tghe value
 USING STYLED COMPONENTS
 - already returns our react component so this already is a functional or class based.
   so instead of creating a function here a functional component we just stored the result of this method call in our style.
-  With using styled components library we can have a nice mixture of "CSX" and JavaScript "all in one file" with help of these installed compoents.
+  With using styled components library we can have a nice mixture of CSS and JavaScript "all in one file" with help of these installed compoents.
 
 - the styles set up here are *not added as inline styles* but instead the style components package takes them 
   puts them into see us as class selectors and adds them to the head of document and then 
@@ -26,18 +24,18 @@ USING STYLED COMPONENTS
 
 - that means you're not working with inline styles which can have certain disadvantages e.g cascading nature of CSS
 */
-const StyledDiv = styled.div `
-width: 60%;
-margin: 16px auto;
-border: 1px solid #eee;
-box-shadow:  0 2px 3px #ccc;
-padding: 16px;
-text-align: center;
+// const StyledDiv = styled.div `
+// width: 60%;
+// margin: 16px auto;
+// border: 1px solid #eee;
+// box-shadow:  0 2px 3px #ccc;
+// padding: 16px;
+// text-align: center;
 
-@media (min-width: 500px) {
-        width: 450px;
-} 
-   `
+// @media (min-width: 500px) {
+//         width: 450px;
+// } 
+//    `
 
 const person = (props) => {
     // const style = {
@@ -47,11 +45,13 @@ const person = (props) => {
     // }
     // <div className="Person" style={style}>
     return (
-        <StyledDiv>
+//        <StyledDiv>
+         <div className={CssModules.Person}>
             <p onClick={props.click}>I'm {props.name} and I am {props.age} years old!</p>
             <p>{props.children}</p>
             <input type="text" onChange={props.changed} value={props.name}/>
-        </StyledDiv>
+        </div>
+            //   </StyledDiv>
     )
 };
 /**
