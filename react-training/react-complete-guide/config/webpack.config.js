@@ -336,9 +336,6 @@ module.exports = function(webpackEnv) {
                 formatter: require.resolve('react-dev-utils/eslintFormatter'),
                 eslintPath: require.resolve('eslint'),
                 resolvePluginsRelativeTo: __dirname,
-                importLoaders: 1,
-                modules: true,
-                localIdentName: '[name]__[local]__[hash:base64:5]'
               },
               loader: require.resolve('eslint-loader'),
             },
@@ -430,37 +427,17 @@ module.exports = function(webpackEnv) {
             // By default we support CSS Modules with the extension .module.css
             {
               test: cssRegex,
-              oneOf: [
-                {
-                  include: path.resolve(__dirname, "src"),
-                  use: [
-                    "style-loader",
-                    { loader: "css-loader", options: { modules: true } }
-                  ]
-                },
-                {
-                  use: [
-                    "style-loader",
-                    "css-loader"
-                  ]
-                }
-              ]
+              exclude: cssModuleRegex,
+              use: getStyleLoaders({
+                sourceMap: isEnvProduction && shouldUseSourceMap,
+                modules: true,
+              }),
+              // Don't consider CSS imports dead code even if the
+              // containing package claims to have no side effects.
+              // Remove this when webpack adds a warning or an error for this.
+              // See https://github.com/webpack/webpack/issues/6571
+              sideEffects: true,
             },
-            // {
-            //   test: cssRegex,
-            //   exclude: cssModuleRegex,
-            //   use: getStyleLoaders({
-            //     sourceMap: isEnvProduction && shouldUseSourceMap,
-            //     importLoaders: 1,
-            //     modules: true,
-            //     localIdentName: '[name]__[local]__[hash:base64:5]'
-            //   }),
-            //   // Don't consider CSS imports dead code even if the
-            //   // containing package claims to have no side effects.
-            //   // Remove this when webpack adds a warning or an error for this.
-            //   // See https://github.com/webpack/webpack/issues/6571
-            //   sideEffects: true,
-            // },
             // Adds support for CSS Modules (https://github.com/css-modules/css-modules)
             // using the extension .module.css
             {

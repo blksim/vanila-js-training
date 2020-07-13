@@ -44,7 +44,17 @@ const person = (props) => {
     //     }
     // }
     // <div className="Person" style={style}>
+    
+/*     how to handle error gracefully? ==> consider ErrorBoundary
+    React will not overwrite your error page like development mode when you built it for production
+    Instead what you will then see is whatever your render inside your error boundary.
+    This doesn not mean that you should cluster your whole application with error boundaries, only use them when it makes sense.
+    Only use error boundaries for cases where you know that it might fail and you can't control that.
+ */
+    const rnd = Math.random();
+   // if (rnd > 0.7) { throw new Error('something went wrong!')};
     return (
+
 //        <StyledDiv>
          <div className={CssModules.Person}>
             <p onClick={props.click}>I'm {props.name} and I am {props.age} years old!</p>

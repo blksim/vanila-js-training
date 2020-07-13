@@ -1,10 +1,12 @@
 import React, { Component } from 'react';
 //import React, { useState } from 'react'; // useState is the hook that allows us to manage state in a functional component.
 //import styled from 'styled-components';
-import CssModule from './App.module.css';
+import CssModule from '../containers/App.module.css';
 //import Radium, { StyleRoot } from 'radium';
 //import './Person/Person.css'; // thanks to webpack, we can actually import css into js though it will not really merge the two files.
-import Person from './Person/Person';
+import Persons from '../components/Person/Persons';
+import ErrorBoundary from '../components/ErrorBoundary/ErrorBoundary';
+import Cockpit from '../components/Cockpit/Cockpit';
 
 // dynamic expression is also syntax of template literal, not react
 // styled component will have a look at that function and pass the props as argument
@@ -182,7 +184,7 @@ class App extends Component {
   }
 
 /*
-  don't add switchNameHandler inside of parantheses. 
+  don't add parantheses to switchNameHandler . 
   you will run into errors if you try to use this because this will then not refer to the class at runtime
   important: we only want to pass 'a reference' and we do this by using 'this' and then referring to that 'property' which holds a function.
   list of supported events in react : https://reactjs.org/docs/events.html#supported-events
@@ -227,22 +229,36 @@ class App extends Component {
       - By passing unique id using 'key' prop, react can use to compare the elements of the future with the elements of the past
         and only update the dom in places where it needs to update it.
       */
+
+      /**
+       * ERROR BOUNDARY
+       * error boundary is so-called higher order component.
+       * it's a component which simply wraps a component with the goal of handling 
+       * any errors that component might throw.
+       */
       persons = (
         <div>
-          {this.state.persons.map((person, index) => {
-            return <Person 
-              click={() => this.deletePersonHandler(index)}
-              name={person.name} 
-              age={person.age}
-              key={person.id}
-              changed={(event) => this.nameChangedHandler(event, person.id)}/>
-          })}
-          {/* <Person name={this.state.persons[0].name} age={this.state.persons[0].age}/> 
-          <Person name={this.state.persons[1].name} age={this.state.persons[1].age} 
-          click={this.switchNameHandler.bind(this, 'Max!')}
-          changed={this.nameChangedHandler}>My Hobbies: Racing</Person> 
-          <Person name={this.state.persons[2].name} age={this.state.persons[2].age}/>   */}
-      </div>
+          <Persons persons={this.state.persons}
+          clicked={this.deletePersonHandler}
+          changed={this.nameChangedHandler}/>
+        </div>
+      //   <div>
+      //     {this.state.persons.map((person, index) => {
+      //       return <ErrorBoundary><Person 
+      //         click={() => this.deletePersonHandler(index)}
+      //         name={person.name} 
+      //         age={person.age}
+      //         key={person.id}
+      //         changed={(event) => this.nameChangedHandler(event, person.id)}/>
+      //         </ErrorBoundary>
+      //       })
+      //     }
+      //     {/* <Person name={this.state.persons[0].name} age={this.state.persons[0].age}/> 
+      //     <Person name={this.state.persons[1].name} age={this.state.persons[1].age} 
+      //     click={this.switchNameHandler.bind(this, 'Max!')}
+      //     changed={this.nameChangedHandler}>My Hobbies: Racing</Person> 
+      //     <Person name={this.state.persons[2].name} age={this.state.persons[2].age}/>   */}
+      // </div>
       );
     }
       // assign a value to one of its properties
@@ -269,23 +285,30 @@ class App extends Component {
       a variable we conditionally assign before returning.
     
     */ 
-   const classes = []; 
-   if (this.state.persons.length <= 2) { // classes = ['red']
-     classes.push('red');
-   } 
-   if (this.state.persons.length <= 1) {
-     classes.push('bold'); // classes = ['red' 'bold']
-   }
+  //  const classes = []; 
+  //  if (this.state.persons.length <= 2) { // classes = ['red']
+  //    classes.push('red');
+  //  } 
+  //  if (this.state.persons.length <= 1) {
+  //    classes.push('bold'); // classes = ['red' 'bold']
+  //  }
    // to use inline media queries with Radium, you should wrap JSX with StyleRoot component
     return (
+      <div>
+        <Cockpit title={this.props.appTitle}
+        showPersons={this.state.showPersons} 
+        persons={this.state.persons}
+        clicked={this.togglePersonsHandler}/>{persons}
+      </div>
 //      <StyleRoot>
-      <div className="App">
-        <h1>Hi. I'm a React App!</h1>
-        <p className={classes.join(' ')}>This is really working!</p>
-        <button className={CssModule.Button} alt={this.state.showPerson} 
-        onClick={this.togglePersonsHandler}>Toggle Persons</button>
-        {persons} 
-         {/* { this.state.showPersons ? 
+      // <div className="App">
+      //   <h1>Hi. I'm a React App!</h1>
+      //   <p className={classes.join(' ')}>This is really working!</p>
+      //   <button className={CssModule.Button} alt={this.state.showPerson} 
+      //   onClick={this.togglePersonsHandler}>Toggle Persons</button>
+      //   {persons} 
+      //   {
+           /* { this.state.showPersons ? 
         <div>
           <Person name={this.state.persons[0].name} age={this.state.persons[0].age}/> 
           <Person name={this.state.persons[1].name} age={this.state.persons[1].age} 
@@ -294,35 +317,42 @@ class App extends Component {
           <Person name={this.state.persons[2].name} age={this.state.persons[2].age}/>  
         </div>
          </div> : null
-        }  */}
-      </div> 
+        }  }*/
+ //     </div> 
 //      </StyleRoot>
-      );
+//      );
      
-      /* looks like html but it's not. just some syntactical sugar.
-      it was basically invented by the react team
-      and we can write it in our javascript files because of the build workflow we're usign here.
-      it will basically automatically transpile it to valid js in the end. */ 
+      /* 
+        JSX
+        
+        - looks like html but it's not. just some syntactical sugar.
+          it was basically invented by the react team and we can write it in our javascript files because of the build workflow we're usign here.
+          it will basically automatically transpile it to valid js in the end. 
+        
+      */ 
 
-      // return React.createElement('div', null, 'h1', 'Hi, I am react app!'); <--- 'h1' passed as a text, not element
+      //return React.createElement('div', null, 'h1', 'Hi, I am react app!'); <--- 'h1' passed as a text, not element
       //return React.createElement('div', {className: 'App'}, React.createElement('h1', null, 'Does this work now?'));
 
-      /* 
-      - The nested createElement above is exact equivalent of this jsx code.
-      and it's actually what this code here will get compiled by one of the many build tools.
-      This is the reason why we use jsx but it's super important to understand 
-      the internals and understand what this compiles to and also, understand what whilst it does look like html, it isn't.
-      This is javascript in the end. it gets compiled to this code.
+      /*
+        React.createElement()
+        
+        - The nested createElement above is exact equivalent of this jsx code.
+          and it's actually what this code here will get compiled by one of the many build tools.
+          This is the reason why we use jsx but it's super important to understand 
+          the internals and understand what this compiles to and also, understand what whilst it does look like html, it isn't.
+          This is javascript in the end. it gets compiled to this code.
 
-      - some words can't be used(e.g class which is a reserved word in javascript)
-      
-      - react converts html-like tags behind the scenes and react defines the attributes in quotation marks.
-      - we can define on all these elements and we don't have the class attribute as we have on the regular html element like 'className' here to add css class.
+        - some words can't be used(e.g class which is a reserved word in javascript)
+        
+        - react converts html-like tags behind the scenes and react defines the attributes in quotation marks.
+        - we can define on all these elements and we don't have the class attribute as we have on the regular html element like 'className' here to add css class.
 
-      - jsx expression must have one root element.
-      - It is a typical thing to wrap everything into one root element per component 
+        - jsx expression must have one root element.
+        - It is a typical thing to wrap everything into one root element per component 
     */  
    
+    );
   }
 }
 // you can use this on both components created with class and extends component as well as functional components
