@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { Component } from 'react';
 //import Radium from 'radium';
 //import styled from 'styled-components';
 import CssModules from './Person.module.css';
@@ -37,7 +37,21 @@ USING STYLED COMPONENTS
 // } 
 //    `
 
+class Person extends Component {
+    render() {
+        console.log('[Person.js] rendering...');
+        return (
+                <div className={CssModules.Person}>
+                    <p onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>
+                    <p>{this.props.children}</p>
+                    <input type="text" onChange={this.props.changed} value={this.props.name}/>
+                </div>
+        )
+
+    }
+}
 const person = (props) => {
+    console.log('[Person.js] rendering...');
     // const style = {
     //     '@media (min-width: 500px)': {
     //         width: '450px'
@@ -51,9 +65,9 @@ const person = (props) => {
     This doesn not mean that you should cluster your whole application with error boundaries, only use them when it makes sense.
     Only use error boundaries for cases where you know that it might fail and you can't control that.
  */
-    const rnd = Math.random();
+    //const rnd = Math.random();
    // if (rnd > 0.7) { throw new Error('something went wrong!')};
-    return (
+/*     return (
 
 //        <StyledDiv>
          <div className={CssModules.Person}>
@@ -63,6 +77,7 @@ const person = (props) => {
         </div>
             //   </StyledDiv>
     )
+ */
 };
 /**
  * - we can output dynamic content as part of our jsx content
@@ -84,7 +99,8 @@ const person = (props) => {
  * 
  */
 //export default Radium(person);
-export default person;
+//export default person;
+export default Person;
 /* 
 // when using class-based components, it's this.props
 class Person extends Component {

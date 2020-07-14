@@ -81,14 +81,71 @@ import Cockpit from '../components/Cockpit/Cockpit';
  */
 
 
-
+// App.js is a class-based component and therefore here, we have access to lifecycle hooks.
 class App extends Component {
+  // This will basically execute the constructor of the component you're extending.
+  // and that's important to make sure that everything gets initialized correctly and you can do things like access this set state.
+  constructor(props) {
+    super(props); 
+    console.log('[App.js] constructor');
+    // old syntax which call super props and set the state up in the constructor.
+    // you can't use setState() because there's no state to merge this state with.
+    this.state = { 
+      persons: [
+        { id: 123, name: 'Max', age: 28 },
+        { id: 456, name: 'Manu', age: 29 },
+        { id: 789, name: 'Stephanie', age: 26}
+      ],
+      otherState: 'some other value', // React will not discard other state but it will simply merge the old state with the new one.
+      showPersons: false
+    }
+  }
+
+  /**
+   * IMPORTANT: you should know how they actually are created and where you can execute your custom code during that lifecycle process.
+   * componentDidMount(), componentDidUpdate() 
+   * and also for performance improvements, shouldComponentUpdate() are THE MOST IMPORTANT HOOKS 
+   * 
+   * because in componentDidMount() and componentDidUpdate(),
+   * you will typically do things like fetching new data from a server, shouldComponentUpdate() can be used for performance improvements.
+   * 
+   * What about functional components?
+   * now with react hooks, you can actually build your entire react app with functional components only
+   * because you can manage the state in here.
+   */
+
+  static getDerivedStateFromProps(props, state) {
+    // you'll not actually not use that too often either.
+    console.log('[App.js] getDerivedStateFromProps', props);
+    return state;
+  }
+
+  componentWillMount() {
+    // these hooks were very rarely used and could be incorrectly
+    // and gtherefore they will be removed in the future. 
+    console.log('[App.js] componentWillMount');
+  }
+
+  componentDidMount() {
+    console.log('[App.js] componentDIdMount');
+  }
+
+  shouldComponentUpdate(nextProps, nextState) {
+    console.log('[App.js] shouldComponentUpdate');
+    return true;
+    // if you return false, toggle will not work because you're preventing the update
+  }
+
+  componentDidUpdate() {
+    console.log('[App.js] componentDidUpdate');
+  }
+
   /* state can be changed and if it changes and that's the special thing about it
   and only works on that state property, if it changes, it will lead React to re-render our DOM or update the DOM
   only class-based components can define and use state.
   whenever state changes, the component will re-render and  reflect the new state.
-  the difference to props is, that this happens within one and the same component */
-  state = {
+  the difference to props is, that this happens within one and the same component 
+  state = { <-- more modern way to initialize the state than above
     persons: [
       { id: 123, name: 'Max', age: 28 },
       { id: 456, name: 'Manu', age: 29 },
@@ -97,7 +154,7 @@ class App extends Component {
     otherState: 'some other value', // React will not discard other state but it will simply merge the old state with the new one.
     showPersons: false
   }
-
+  */
 //   switchNameHandler = (newName) => {
 //   // DONT DO THIS: this.state.persons[0].name = 'Maximilian'; // we shouldn't mutate which means change the state directly like this.
 //   // this.setState() only availabe in class-based components.
@@ -198,6 +255,7 @@ class App extends Component {
   2. NOT RECOMMENDED : use arrow function with inside of curly brace. it is convenient but can be inefficient because react can re-render certain things too often 
   */  
   render() {
+    console.log('[App.js] render');
     // const style = {// using inline styles are only applied to single element and no other element or even in the same component.
     //   backgroundColor: 'green',
     //   color: 'white',
