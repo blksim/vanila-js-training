@@ -1,10 +1,13 @@
-import React, { useEffect } from 'react'; 
+import React, { useEffect, useRef } from 'react'; 
 // useEffect is second most important react hook you can use next to useState because useEffect
 // useEffect basically combines the functionality or the use cases you can cover of all these class-based lifecycle hooks in one React hook here and both is called hook, it's actually not related. 
 // this is not a lifecycle hook, it's a react hook. -> basically a function you can add into one of your functional components
 import CssModule from './Cockpit.module.css';
 
 const Cockpit = (props) => {
+    const toggleBtnRef = useRef(null);
+    
+
     useEffect(() => { // you can add it anywhere here in your functional component body and useEffect as a default takes a function that will run for every render cycle.
    /* 
       useEffect()
@@ -33,9 +36,11 @@ const Cockpit = (props) => {
       where you simply point at all the variables or all the data that actually here
       */
      console.log('[Cockpigt.js] useEffect');
-     const timer = setTimeout(() => {
-        alert('Saved data to cloud!');
-      }, 1000);
+     toggleBtnRef.current.click(); // only after JSX was parsed and rendered for the first time, so That React did have a change of connecting your ref here.
+
+     //  const timer = setTimeout(() => {
+      //     alert('Saved data to cloud!');
+      //   }, 1000);
         // setTimeout(() => {
         // alert('Saved data to cloud!');
         // }, 1000);
@@ -87,7 +92,7 @@ const Cockpit = (props) => {
         <div className={CssModule.Cockpit}>        
             <h1>{props.title}</h1>
             <p className={classes.join(' ')}>This is really working!</p>
-            <button className={CssModule.Cockpit.Button} alt={props.showPerson} 
+            <button ref={toggleBtnRef} className={CssModule.Cockpit.Button} alt={props.showPerson} 
             onClick={props.clicked}>Toggle Persons</button>
         </div>
 

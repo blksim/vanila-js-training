@@ -41,10 +41,15 @@ USING STYLED COMPONENTS
 //    `
 
 class Person extends Component {
-    componentDidMount() {
-        this.inputElement.focus();
+    constructor(props) {
+        super(props); // always when you add a constructor, add super first
+        this.inputElementRef = React.createRef(); // 
     }
-    
+    componentDidMount() {
+        //this.inputElement.focus();
+        this.inputElementRef.current.focus(); // current property gives your current reference
+    }
+
     render() {
         console.log('[Person.js] rendering...');
 /*         you must never forget these JSX elements are always call to React.createElement() 
@@ -70,10 +75,26 @@ class Person extends Component {
         <React.Fragment>
            <p key="i1" onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>
             <p key="i2">{this.props.children}</p>
-            <input key="i3" ref={(inputEl) => { this.inputElement = inputEl }} type="text" onChange={this.props.changed} value={this.props.name}/>
+            {/* <input key="i3" ref={(inputEl) => { this.inputElement = inputEl }} type="text" onChange={this.props.changed} value={this.props.name}/> */}
+            <input key="i3" ref={this.inputElementRef} type="text" onChange={this.props.changed} value={this.props.name}/>
         </React.Fragment>
+        // store input element reference to a global property
     ) 
-    // ref, just like key, is a special property you can pass into any component, it is detected and understood by React.
+    /*
+    [REF]
+    How can we get access to a HTML element like this input? 
+    DOM API doesn't care whether we use React or not and therefore, this is not the optimal way of selecting this.
+    sure we could set up an ID here to select it by ID but React actually has an easier way for us to select an element, a concept called 'refts' stands for references.
+    On any element and that does really mean not just on inputs but on any element including your own components, you can add a special ref keyword.
+    Now ref, just like key, is a special property you can pass into any component, it is detected and understood by react.
+
+    ref, just like key, is a special property you can pass into any component, it is detected and understood by React.
+    you pass a function here and this can be an anonymous arrow function as I'm doing it here and the argument you're getting is a reference tgo the element you place this on
+
+    1) pass a function to ref -> the argument your getting is a reference to the element -> in that function body, you can use innputEl.
+        this only works in class-based components.
+    2) 16.3~ 
+    */
     
 }
 }
