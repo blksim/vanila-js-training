@@ -7,6 +7,8 @@ import CssModule from '../containers/App.module.css';
 import Persons from '../components/Person/Persons';
 import ErrorBoundary from '../components/ErrorBoundary/ErrorBoundary';
 import Cockpit from '../components/Cockpit/Cockpit';
+import withClass from '../hoc/withClass';
+import Auxiliary from '../hoc/Auxiliary';
 
 // dynamic expression is also syntax of template literal, not react
 // styled component will have a look at that function and pass the props as argument
@@ -93,11 +95,13 @@ class App extends Component {
     this.state = { 
       persons: [
         { id: 123, name: 'Max', age: 28 },
-        { id: 456, name: 'Manu', age: 29 },
+        { id: 456, name: 'Manu', age: 30 },
         { id: 789, name: 'Stephanie', age: 26}
       ],
       otherState: 'some other value', // React will not discard other state but it will simply merge the old state with the new one.
-      showPersons: false
+      showPersons: false,
+      showCockpit: true,
+      changeCounter: 0
     }
   }
 
@@ -120,11 +124,11 @@ class App extends Component {
     return state;
   }
 
-  componentWillMount() {
-    // these hooks were very rarely used and could be incorrectly
-    // and gtherefore they will be removed in the future. 
-    console.log('[App.js] componentWillMount');
-  }
+  // componentWillMount() {
+  //   // these hooks were very rarely used and could be incorrectly
+  //   // and gtherefore they will be removed in the future. 
+  //   console.log('[App.js] componentWillMount');
+  // }
 
   componentDidMount() {
     console.log('[App.js] componentDIdMount');
@@ -132,8 +136,25 @@ class App extends Component {
 
   shouldComponentUpdate(nextProps, nextState) {
     console.log('[App.js] shouldComponentUpdate');
-    return true;
-    // if you return false, toggle will not work because you're preventing the update
+    // SUPER IMPORTANT: This is super powerful because it can save us a performance, for that removal of the cockpit,
+    // we did not go through the entire persons component tree to re-render that virtually.
+    //if (nextProps.persons !== this.props.persons) { // what we do compare is actually pointer
+      // if I would just manipulated the old array directly ?
+      // the object in memory would be the same even if some property of it changed
+      // then our shouldComponentUpdate check would not work because it doesn't *deeply* compare this.
+    //   return true;
+    // } else {
+    //   return false; //if you return false, toggle will not work because you're preventing the update
+    // } 
+
+    /*   **** It's not a super performance heavy check but still,
+    let's say 60% of your components actually always need to update when their parent updates,
+    welle if you the wrapped all your components with these extra checkx, then you're running unnecessary cehcks on 60% of your component codebase
+    so you should evaluate this carefully.
+
+    Otherwise if you're pretty sure that in all or almost all cases where your parent updates, you will need to update too,
+    then you should not add shouldComponentUpdate or React memo because you will just execute some extra logic that makes no sense and actually just slows down the application a tiny bit.
+ */    return true; 
   }
 
   componentDidUpdate() {
@@ -197,8 +218,20 @@ class App extends Component {
   //     { id: 'sjdje3', name: 'Stephanie', age: 26}
   //   ]
   // })
-    this.setState( {persons: persons } );
+
+  // SUPER IMPORTANT TO KEEP THAT IN MIND : it's an important pattern, not an optional solution but really the best practice for state updates that depend on the old state.
+    this.setState( (prevState, props) => {
+      return {
+        persons: persons,
+        changeCounter: this.state.changeCounter + 1
+      }
+    });
   }
+    /* this.setState(() => { person: persons, changeCounter: this.state.changeCounter + 1})
+    you call setState synchronously here but it's not guaranteed to execute and finish immediately and therefore,  
+    this state when used for a state update is not guaranteed to be the latest state or the previous state on which you depend, it could be an older state.
+    yet it is the wrong way of updating changeCounter. Behind the scenes, setState() does not immediately trigger an update of the state of this component in a re-render cycle,
+    instead it's basically scheduled by React and React will then perform the state update and re-render cycle when it has the available reousrces to do taht. */
 
   /**
    * - we did this by getting access to all the persons in the state, removing the one element we wanted to remove 
@@ -352,12 +385,25 @@ class App extends Component {
   //  }
    // to use inline media queries with Radium, you should wrap JSX with StyleRoot component
     return (
-      <div>
-        <Cockpit title={this.props.appTitle}
+      <Auxiliary>
+        <button onClick={() => {this.setState({ showCockpit: false})}}>Remove Cockpit</button>
+        {this.state.showCockpit ? (<Cockpit title={this.props.appTitle}
         showPersons={this.state.showPersons} 
-        persons={this.state.persons}
-        clicked={this.togglePersonsHandler}/>{persons}
-      </div>
+        personsLength={this.state.persons.length}
+        clicked={this.togglePersonsHandler}/>
+        ) : null}
+        {persons}
+      </Auxiliary>
+
+      // <div>
+      //   <button onClick={() => {this.setState({ showCockpit: false})}}>Remove Cockpit</button>
+      //   {this.state.showCockpit ? (<Cockpit title={this.props.appTitle}
+      //   showPersons={this.state.showPersons} 
+      //   personsLength={this.state.persons.length}
+      //   clicked={this.togglePersonsHandler}/>
+      //   ) : null}
+      //   {persons}
+      // </div>
 //      <StyleRoot>
       // <div className="App">
       //   <h1>Hi. I'm a React App!</h1>
@@ -415,6 +461,7 @@ class App extends Component {
 }
 // you can use this on both components created with class and extends component as well as functional components
 //export default Radium(App); 
- export default App;
+// export default App;
+ export default withClass(App, CssModule.App);
 
 

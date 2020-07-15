@@ -1,7 +1,10 @@
 import React, { Component } from 'react';
+import propTypes from 'prop-types'; // you can add an extra property and now this works in both functional and class-based components.
 //import Radium from 'radium';
 //import styled from 'styled-components';
 import CssModules from './Person.module.css';
+import Auxiliary from '../../hoc/Auxiliary';
+import withClass from '../../hoc/withClass';
 
 /* props is simply an object giving us access to all the attributes we pass to our own components.
 But sometimes you don't want to get some information from outside but you want to have it inside a component and change it from inside there, too.
@@ -38,17 +41,41 @@ USING STYLED COMPONENTS
 //    `
 
 class Person extends Component {
+    componentDidMount() {
+        this.inputElement.focus();
+    }
+    
     render() {
         console.log('[Person.js] rendering...');
-        return (
+/*         you must never forget these JSX elements are always call to React.createElement() 
+        and in a return statement, you couldn't return multiple React.createElement()
+        But the moment you wrap this with one React.createElement(), technically fro ma JS point of view, that is fine.
+         
+    return (
+        <Auxiliary>
+            <p key="i1" onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>
+            <p key="i2">{this.props.children}</p>
+            <input key="i3" type="text" onChange={this.props.changed} value={this.props.name}/>
+        </Auxiliary>
+        );  
+         return (
                 <div className={CssModules.Person}>
                     <p onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>
                     <p>{this.props.children}</p>
                     <input type="text" onChange={this.props.changed} value={this.props.name}/>
                 </div>
         )
-
-    }
+ */
+    return (
+        <React.Fragment>
+           <p key="i1" onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>
+            <p key="i2">{this.props.children}</p>
+            <input key="i3" ref={(inputEl) => { this.inputElement = inputEl }} type="text" onChange={this.props.changed} value={this.props.name}/>
+        </React.Fragment>
+    ) 
+    // ref, just like key, is a special property you can pass into any component, it is detected and understood by React.
+    
+}
 }
 const person = (props) => {
     console.log('[Person.js] rendering...');
@@ -98,9 +125,23 @@ const person = (props) => {
  * for basically transforming selectors like media queries or other animations with keyframes.
  * 
  */
+
+ // proptypes is a special property which you add to any JS object or any JS component object, that React will watch out for in development mode and give you a warning if you then pass in incorrect props.
+ // you now define which props this component uses and which type of data each component should be of.
+//if someone uses your component incorrectly, during development, they will get such a warning and then they can fix their error.
+ Person.propTypes = {
+    click: propTypes.func,
+    name: propTypes.string,
+    age: propTypes.number,
+    changed: propTypes.func
+ };
+
 //export default Radium(person);
 //export default person;
-export default Person;
+//export default Person;
+export default withClass(Person, CssModules.Person); // The data is missing because what we're doing is we're taking our person component and right before we export it, we pass it into the withClass function.
+// this withClass figure returns the functional component that wraps our person component,
+
 /* 
 // when using class-based components, it's this.props
 class Person extends Component {

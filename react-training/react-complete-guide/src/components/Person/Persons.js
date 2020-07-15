@@ -1,7 +1,11 @@
-import React, { Component } from 'react';
+//import React, { Component } from 'react'; 
+import React, { PureComponent } from 'react'; 
 import Person from './Person';
 
-class Persons extends Component {
+// PureComponent works just as before and result will be the same, but it just a normal component that already implements shouldComponentUpdate with a complete props check,
+// so that checks for any changes in any prop of that component.
+// So you can also just PureComponent instead of manually implementing this shouldComponentUpdate check.
+class Persons extends PureComponent {
   // static getDerivedStateFromProps(props, state) {
   //   console.log('[Persons.js] getDerivedStateFromProps');
   //   return state;
@@ -17,13 +21,21 @@ class Persons extends Component {
     The above lifecycles should be removed. Learn more about this warning here: */
   }
 
-  shouldComponentUpdate(nextProps, nextState) {
-    console.log('[Persons.js] shouldComponentUpdate');
-    return true;
+  // if you are checkign all properties like below, you can also not use shouldComponentUpdate but instead a different type of compoent: PureComponet
+  // shouldComponentUpdate(nextProps, nextState) {
+  //   console.log('[Persons.js] shouldComponentUpdate');
+  //   if (nextProps.persons !== this.props.persons || 
+  //       nextProps.changed !== this.props.changed || 
+  //       nextProps.clicked !== this.props.clicked
+  //     ) {
+  //       return true;
+  //     } else {
+  //       return false;
+  //     }
     // You have to return true if react should continue updating or false if it shouldn't.
     // of course you don't typically hardcode then in here but instead you add some condition
     // where you compare the curernt props to your next props, to the upcoming props to find out if they changed and if they changed, you want to permit this.
-  }
+  //}
 
   getSnapshotBeforeUpdate(prevProps, prevState) {
     console.log('[Persons.js] getSnapshotBeforeUpdate');
@@ -45,8 +57,17 @@ class Persons extends Component {
     console.log(snapshot);
   }
 
+  // if you have a live connection to some server or something like that, you can add componentWillUnmount()
+  componentWillUnmount() {
+    console.log('[Persons.js] componentWillUnmount');
+    // you could have any code that needs to run right before the component is removed
+  }
+
   render() {
     console.log('[Person.js] rendering....');
+    //React does allow us to return an array of adjacent elements as long as all the items in there
+    //have a key and that key is required so that React can efficiently update and reorder these elements
+    //as it might be required by your app.
     return this.props.persons.map((person, index) => {
     return (
       <Person 
