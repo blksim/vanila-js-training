@@ -1,6 +1,7 @@
 //import React, { Component } from 'react'; 
 import React, { PureComponent } from 'react'; 
 import Person from './Person';
+import AuthContext from '../../context/auth-context';
 
 // PureComponent works just as before and result will be the same, but it just a normal component that already implements shouldComponentUpdate with a complete props check,
 // so that checks for any changes in any prop of that component.
@@ -69,16 +70,24 @@ class Persons extends PureComponent {
     //have a key and that key is required so that React can efficiently update and reorder these elements
     //as it might be required by your app.
     return this.props.persons.map((person, index) => {
-    return (
-      <Person 
-          click={() => this.props.clicked(index)}
-          name={person.name} 
-          age={person.age}
-          key={person.id}
-          changed={(event) => this.props.changed(event, person.id)}/>
-    );
-   });
-  }
+        return (
+          <Person 
+              click={() => this.props.clicked(index)}
+              name={person.name} 
+              age={person.age}
+              key={person.id}
+              changed={(event) => this.props.changed(event, person.id)}
+          />
+        );
+      })}
+/*      CONTEXT
+
+        the code above is not so great because it simply leads to extra redundancy and it makes our components a bit less reusable because wherever we're using the persons component,
+        we have to make sure we pass in is authenticated so that we can forward it and there, we have a feature called context which helps us solve the issue.
+        when you need certain state in pultiple components and you don't want to pass that state across the multiple layers of component
+        just to get it from component A at the top to component D at the very bottom when the component B, C in between don't really care about it 
+        and that's exactly the use case here.
+ */   
 }
 /* const persons = (props) => { 
   console.log('[Person.js] rendering....');

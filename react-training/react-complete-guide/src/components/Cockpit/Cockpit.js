@@ -1,13 +1,14 @@
-import React, { useEffect, useRef } from 'react'; 
+import React, { useEffect, useRef, useContext } from 'react'; 
 // useEffect is second most important react hook you can use next to useState because useEffect
 // useEffect basically combines the functionality or the use cases you can cover of all these class-based lifecycle hooks in one React hook here and both is called hook, it's actually not related. 
 // this is not a lifecycle hook, it's a react hook. -> basically a function you can add into one of your functional components
 import CssModule from './Cockpit.module.css';
+import AuthContext from '../../context/auth-context'
 
 const Cockpit = (props) => {
     const toggleBtnRef = useRef(null);
-    
-
+    const authContext = useContext(AuthContext); // you simply pass your context object like this, react will make the connection for you behind the scenes.
+    console.log(authContext.authenticated);
     useEffect(() => { // you can add it anywhere here in your functional component body and useEffect as a default takes a function that will run for every render cycle.
    /* 
       useEffect()
@@ -94,6 +95,10 @@ const Cockpit = (props) => {
             <p className={classes.join(' ')}>This is really working!</p>
             <button ref={toggleBtnRef} className={CssModule.Cockpit.Button} alt={props.showPerson} 
             onClick={props.clicked}>Toggle Persons</button>
+            {/* <AuthContext.Consumer> */}
+              {/* {context => <button onClick={context.login}>Log in</button>} */}
+              <button onClick={authContext.login}>Log in</button>
+            {/* </AuthContext.Consumer> */}
         </div>
 
     );

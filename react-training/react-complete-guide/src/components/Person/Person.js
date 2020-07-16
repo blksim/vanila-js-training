@@ -5,6 +5,7 @@ import propTypes from 'prop-types'; // you can add an extra property and now thi
 import CssModules from './Person.module.css';
 import Auxiliary from '../../hoc/Auxiliary';
 import withClass from '../../hoc/withClass';
+import AuthContext from '../../context/auth-context';
 
 /* props is simply an object giving us access to all the attributes we pass to our own components.
 But sometimes you don't want to get some information from outside but you want to have it inside a component and change it from inside there, too.
@@ -45,13 +46,23 @@ class Person extends Component {
         super(props); // always when you add a constructor, add super first
         this.inputElementRef = React.createRef(); // 
     }
+
+    static contextType = AuthContext; // it can be accessed from outside without the need to instantiate an object based on this class first and React will access contextType for you
+    // Now this allows React to automatically connect this component here,
+    // this class-based component to your context behind the scenes and it gives you a new property in this
+    // component, the this context property. ==> functional components : contextType is not available. use context hook by importing *useContext*
     componentDidMount() {
         //this.inputElement.focus();
         this.inputElementRef.current.focus(); // current property gives your current reference
+        /**
+         * Context API only gives you to context in your JSX code down there, where you render authContext consumer.
+         * What if you wanted to have access to it in componentDidMount because here you also need the authentication status because you are maybe sending HTTP request that needs userID?
+         * well then you would have no change to access the context in componentDidMount when injecting or when using the context like this.
+         * 
+         * Thankfully, React 16.6 added another way of using context. You can add a special static property type named *contextType*.
+         */
     }
 
-    render() {
-        console.log('[Person.js] rendering...');
 /*         you must never forget these JSX elements are always call to React.createElement() 
         and in a return statement, you couldn't return multiple React.createElement()
         But the moment you wrap this with one React.createElement(), technically fro ma JS point of view, that is fine.
@@ -71,33 +82,47 @@ class Person extends Component {
                 </div>
         )
  */
-    return (
-        <React.Fragment>
-           <p key="i1" onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>
-            <p key="i2">{this.props.children}</p>
-            {/* <input key="i3" ref={(inputEl) => { this.inputElement = inputEl }} type="text" onChange={this.props.changed} value={this.props.name}/> */}
-            <input key="i3" ref={this.inputElementRef} type="text" onChange={this.props.changed} value={this.props.name}/>
-        </React.Fragment>
-        // store input element reference to a global property
-    ) 
+    
+    /* 
+    Context API
+        this is how we get access to that context object here in the place where we consume it.
+        we provide a function that accepts context as an argument from App.js, we'll get that argument by the authContext ehre, 
+        React executes this function for us and then in this JSX code which we return here and which will be rendered in the end,
+        we have access to that context object and therefore now, we could forward this to isAuth 
+        **it's a great way of bypassing components and directly passing data from A to D if you have very long chain of data**
+    */
+    render() {
+        return (
+            <React.Fragment>
+                {/* <AuthContext.Consumer> */}
+                    {/* {context => context.authenticated? <p>Autenticated!</p> : <p>Please log in</p>} */}
+                    {this.context.authenticated? <p>Autenticated!</p> : <p>Please log in</p>}
+                {/* </AuthContext.Consumer> */}
+               <p key="i1" onClick={this.props.click}>I'm {this.props.name} and I am {this.props.age} years old!</p>
+                <p key="i2">{this.props.children}</p>
+                {/* <input key="i3" ref={(inputEl) => { this.inputElement = inputEl }} type="text" onChange={this.props.changed} value={this.props.name}/> */}
+                <input key="i3" ref={this.inputElementRef} type="text" onChange={this.props.changed} value={this.props.name}/>
+            </React.Fragment>
+            // store input element reference to a global property
+        );
+    }}
     /*
-    [REF]
-    How can we get access to a HTML element like this input? 
-    DOM API doesn't care whether we use React or not and therefore, this is not the optimal way of selecting this.
-    sure we could set up an ID here to select it by ID but React actually has an easier way for us to select an element, a concept called 'refts' stands for references.
-    On any element and that does really mean not just on inputs but on any element including your own components, you can add a special ref keyword.
-    Now ref, just like key, is a special property you can pass into any component, it is detected and understood by react.
+        REF
 
-    ref, just like key, is a special property you can pass into any component, it is detected and understood by React.
-    you pass a function here and this can be an anonymous arrow function as I'm doing it here and the argument you're getting is a reference tgo the element you place this on
+        How can we get access to a HTML element like this input? 
+        DOM API doesn't care whether we use React or not and therefore, this is not the optimal way of selecting this.
+        sure we could set up an ID here to select it by ID but React actually has an easier way for us to select an element, a concept called 'refts' stands for references.
+        On any element and that does really mean not just on inputs but on any element including your own components, you can add a special ref keyword.
+        Now ref, just like key, is a special property you can pass into any component, it is detected and understood by react.
 
-    1) pass a function to ref -> the argument your getting is a reference to the element -> in that function body, you can use innputEl.
-        this only works in class-based components.
-    2) 16.3~ 
+        ref, just like key, is a special property you can pass into any component, it is detected and understood by React.
+        you pass a function here and this can be an anonymous arrow function as I'm doing it here and the argument you're getting is a reference tgo the element you place this on
+
+        1) pass a function to ref -> the argument your getting is a reference to the element -> in that function body, you can use innputEl.
+            this only works in class-based components.
+        2) 16.3~ React.createRef
     */
     
-}
-}
 const person = (props) => {
     console.log('[Person.js] rendering...');
     // const style = {
@@ -106,7 +131,7 @@ const person = (props) => {
     //     }
     // }
     // <div className="Person" style={style}>
-    
+}
 /*     how to handle error gracefully? ==> consider ErrorBoundary
     React will not overwrite your error page like development mode when you built it for production
     Instead what you will then see is whatever your render inside your error boundary.
@@ -125,8 +150,8 @@ const person = (props) => {
         </div>
             //   </StyledDiv>
     )
- */
 };
+ */
 /**
  * - we can output dynamic content as part of our jsx content
  * - You will receive one argument in your function, one argument which is passwd into it by default by react
@@ -150,13 +175,13 @@ const person = (props) => {
  // proptypes is a special property which you add to any JS object or any JS component object, that React will watch out for in development mode and give you a warning if you then pass in incorrect props.
  // you now define which props this component uses and which type of data each component should be of.
 //if someone uses your component incorrectly, during development, they will get such a warning and then they can fix their error.
- Person.propTypes = {
+
+Person.propTypes = {
     click: propTypes.func,
     name: propTypes.string,
     age: propTypes.number,
     changed: propTypes.func
- };
-
+};
 //export default Radium(person);
 //export default person;
 //export default Person;

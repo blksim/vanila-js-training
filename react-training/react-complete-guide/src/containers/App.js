@@ -9,6 +9,7 @@ import ErrorBoundary from '../components/ErrorBoundary/ErrorBoundary';
 import Cockpit from '../components/Cockpit/Cockpit';
 import withClass from '../hoc/withClass';
 import Auxiliary from '../hoc/Auxiliary';
+import AuthContext from '../context/auth-context';
 
 // dynamic expression is also syntax of template literal, not react
 // styled component will have a look at that function and pass the props as argument
@@ -101,7 +102,8 @@ class App extends Component {
       otherState: 'some other value', // React will not discard other state but it will simply merge the old state with the new one.
       showPersons: false,
       showCockpit: true,
-      changeCounter: 0
+      changeCounter: 0,
+      authenticated: false
     }
   }
 
@@ -266,11 +268,16 @@ class App extends Component {
 
   togglePersonsHandler = () => {
     const doesShow = this.state.showPersons;
-    console.log(doesShow); 
+    //console.log(doesShow); 
     this.setState({showPersons: !doesShow}); 
     /* this gets merged with the other state.
     it does not mean that the entire state gets replaced with showPersons only.
     the old state persons, another state simply is not touched, react merges the update showPersons value for us into the state. */
+  }
+
+  loginHandler = () => {
+    const authenticated = this.state.authenticated;
+    this.setState({authenticated: !authenticated});
   }
 
 /*
@@ -387,14 +394,22 @@ class App extends Component {
     return (
       <Auxiliary>
         <button onClick={() => {this.setState({ showCockpit: false})}}>Remove Cockpit</button>
-        {this.state.showCockpit ? (<Cockpit title={this.props.appTitle}
-        showPersons={this.state.showPersons} 
-        personsLength={this.state.persons.length}
-        clicked={this.togglePersonsHandler}/>
-        ) : null}
-        {persons}
+        <AuthContext.Provider value={{authenticated: this.state.authenticated, login: this.login}} >
+          {this.state.showCockpit ? (<Cockpit title={this.props.appTitle}
+          showPersons={this.state.showPersons} 
+          personsLength={this.state.persons.length}
+          clicked={this.togglePersonsHandler}/>
+          ) : null}
+          {persons}
+        </AuthContext.Provider>
       </Auxiliary>
-
+    /**
+     * Provider
+     *  - it takes a *value* prop **and this is why the default value here don't really matter**,
+     *    the default value will apply when you don't sent any other vlaue.
+     *    However in many use cases like one, you actually want to have a dynamic value, the auth status can change afterall and therefore, I'll manage the status here in app.js
+     *    and I pass my current state of authentication status here to value.
+     */
       // <div>
       //   <button onClick={() => {this.setState({ showCockpit: false})}}>Remove Cockpit</button>
       //   {this.state.showCockpit ? (<Cockpit title={this.props.appTitle}
